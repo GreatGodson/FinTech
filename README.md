@@ -4,7 +4,7 @@ This project uses transactions in Firebase(FirebaseAuth and FireStore) to send a
 
 ## Inspiration
 
-Design inspiration by me 😎
+Design inspiration by me 😎 
 
 ## Screenshots
 
@@ -18,15 +18,15 @@ Design inspiration by me 😎
 
 ## Features
 
-Registration and login (email and password)
+⚡️ Registration and login (email and password)
 
-Email verification
+⚡ Email verification
 
-Three wallets with three different currencies(USD,POUNDS, NGN)
+⚡ Three wallets with three different currencies(USD,POUNDS, NGN)
 
-Conversion from one currency to another currency(wallet to wallet) *WIP* 
+⚡ Conversion from one currency to another currency(wallet to wallet) *WIP* 
 
-Transfer and receive from any currency *WIP* 
+⚡ Transfer and receive from any currency *WIP* 
 
 ## Contributions
 
