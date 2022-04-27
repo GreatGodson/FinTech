@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:simba_ultimate/components/card_widget.dart';
+import 'package:simba_ultimate/components/icons_widget.dart';
 import 'package:simba_ultimate/components/reusable_widget.dart';
 import 'package:simba_ultimate/constants.dart';
 import 'package:simba_ultimate/services/authentication.dart';
