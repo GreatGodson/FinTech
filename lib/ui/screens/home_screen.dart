@@ -1,18 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/components/card_widget.dart';
 import 'package:simba_ultimate/components/icons_widget.dart';
-import 'package:simba_ultimate/components/reusable_widget.dart';
-import 'package:simba_ultimate/constants.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:simba_ultimate/services/currency/currency.dart';
 import 'package:simba_ultimate/ui/screens/conversion_screen.dart';
 import 'package:simba_ultimate/ui/screens/profile_screen.dart';
 import 'package:simba_ultimate/ui/screens/send_money_screen.dart';
 import 'package:simba_ultimate/ui/screens/transaction_screen.dart';
-import 'package:simba_ultimate/services/authentication/authentication.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,14 +16,30 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int nairaBalance = 0;
+  int poundBalance = 0;
+  int dollarBalance = 0;
+
+  getCurrency() async {
+    Currency currency = Currency();
+    List gottenData = await currency.getCurrenciesData();
+    double ngnBalance = gottenData[0]["NGN"];
+    double gbpBalance = gottenData[0]["GBP"];
+    int usdBalance = gottenData[0]["USD"];
+
+    nairaBalance = ngnBalance.toInt();
+    poundBalance = gbpBalance.toInt();
+    dollarBalance = usdBalance.toInt();
+  }
+
   @override
   void initState() {
     super.initState();
     // TODO: implement initState
     Authentication authentication = Authentication();
     authentication.getCurrentUser;
-    Currency currency = Currency();
-    currency.getData();
+    getCurrency();
+
     // authentication.userFirstName();
     // authentication.getDocument();
     // authentication.userDetails();
@@ -98,15 +108,16 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 400,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: const [
+                children: [
                   ReusableCard(
                     imageName: 'usa3.jpeg',
                     currency: 'USD',
                     balance: Padding(
-                      padding: EdgeInsets.only(left: 10),
+                      padding: const EdgeInsets.only(left: 10),
                       child: Text(
-                        '\$1000',
-                        style: TextStyle(color: Colors.white, fontSize: 35),
+                        '﹩ $dollarBalance',
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 35),
                       ),
                     ),
                   ),
@@ -114,10 +125,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     imageName: 'uk_flag.jpeg',
                     currency: 'GBP',
                     balance: Padding(
-                      padding: EdgeInsets.only(left: 22),
+                      padding: const EdgeInsets.only(left: 22),
                       child: Text(
-                        '£776',
-                        style: TextStyle(color: Colors.white, fontSize: 35),
+                        '£ $poundBalance',
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 35),
                       ),
                     ),
                   ),
@@ -125,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     imageName: 'nigeria.png',
                     currency: 'NAIRA',
                     balance: Text(
-                      '₦450,000',
+                      '₦ $nairaBalance',
                       style: TextStyle(color: Colors.white, fontSize: 35),
                     ),
                   ),
