@@ -3,7 +3,7 @@ import 'package:simba_ultimate/components/button_widget.dart';
 import 'package:simba_ultimate/components/password_textfield.dart';
 import 'package:simba_ultimate/components/reusable_widget.dart';
 import 'package:simba_ultimate/components/textfield_widget.dart';
-import 'package:simba_ultimate/services/authentication.dart';
+import 'package:simba_ultimate/services/authentication/authentication.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:simba_ultimate/ui/screens/doc.dart';

@@ -4,12 +4,15 @@ import 'package:simba_ultimate/components/card_widget.dart';
 import 'package:simba_ultimate/components/icons_widget.dart';
 import 'package:simba_ultimate/components/reusable_widget.dart';
 import 'package:simba_ultimate/constants.dart';
-import 'package:simba_ultimate/services/authentication.dart';
+import 'package:simba_ultimate/services/authentication/authentication.dart';
+import 'package:simba_ultimate/services/currency/currency.dart';
 import 'package:simba_ultimate/ui/screens/conversion_screen.dart';
 import 'package:simba_ultimate/ui/screens/profile_screen.dart';
 import 'package:simba_ultimate/ui/screens/send_money_screen.dart';
 import 'package:simba_ultimate/ui/screens/transaction_screen.dart';
-import 'package:simba_ultimate/services/authentication.dart';
+import 'package:simba_ultimate/services/authentication/authentication.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -21,18 +24,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    // TODO: implement initState
     Authentication authentication = Authentication();
     authentication.getCurrentUser;
+    Currency currency = Currency();
+    currency.getData();
     // authentication.userFirstName();
     // authentication.getDocument();
-    authentication.userDetails();
+    // authentication.userDetails();
   }
 
-  Authentication authentication = Authentication();
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -110,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   ReusableCard(
                     imageName: 'uk_flag.jpeg',
-                    currency: 'POUNDS',
+                    currency: 'GBP',
                     balance: Padding(
                       padding: EdgeInsets.only(left: 22),
                       child: Text(

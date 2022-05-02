@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:simba_ultimate/services/authentication.dart';
+import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:simba_ultimate/ui/screens/login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {

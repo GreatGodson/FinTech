@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:simba_ultimate/services/authentication.dart';
+import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:simba_ultimate/ui/screens/navigation_bar_screen.dart';
 
 class VerifyMailScreen extends StatefulWidget {
