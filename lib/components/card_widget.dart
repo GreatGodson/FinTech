@@ -44,7 +44,7 @@ class ReusableCard extends StatelessWidget {
       ),
       Positioned(
         top: 80.0,
-        left: 95.0,
+        left: 75.0,
         child: Padding(
           padding: const EdgeInsets.only(left: 10),
           child: balance,

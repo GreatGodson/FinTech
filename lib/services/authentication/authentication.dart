@@ -119,6 +119,7 @@ class Authentication {
     final user = auth.currentUser;
     final userUid = user!.uid;
     final data = collection.doc(userUid).get();
+    // String name =  data["firstName"];
     String firstName = data.toString();
     print(firstName);
     // final userDetails = await getData();

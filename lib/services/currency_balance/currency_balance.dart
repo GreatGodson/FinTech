@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:simba_ultimate/constants.dart';
 
-const apikey = "7sQsXGa2qMCpoWgRCRK7tqVmgOk378AA";
-
-const startingBalance = 500;
-const startingCurrency = 'USD';
-const List<String> currencyList = [
-  'GBP',
-  'NGN',
-  'USD',
-];
-
-class Currency {
+class CurrencyBalance {
   List currencyData = [];
   List? getCurrency;
   Future getCurrenciesData() async {
@@ -21,9 +12,14 @@ class Currency {
           'https://api.apilayer.com/exchangerates_data/convert?to=$currency&from=$startingCurrency&amount=$startingBalance&apikey=$apikey';
       var url = Uri.parse(dataUrl);
       http.Response response = await http.get(url);
-      String jsonFormat = response.body;
-      var result = jsonDecode(jsonFormat);
-      currencyData.add(result['result']);
+      if (response.statusCode == 200) {
+        String jsonFormat = response.body;
+        var result = jsonDecode(jsonFormat);
+        currencyData.add(result['result']);
+      } else {
+        print(response.statusCode);
+        throw 'Problem with Get request';
+      }
     }
     getCurrency = [
       {"GBP": currencyData[0], "NGN": currencyData[1], "USD": currencyData[2]}

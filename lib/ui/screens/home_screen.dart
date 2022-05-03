@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:simba_ultimate/components/card_widget.dart';
 import 'package:simba_ultimate/components/icons_widget.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
-import 'package:simba_ultimate/services/currency/currency.dart';
+import 'package:simba_ultimate/services/currency_balance/currency_balance.dart';
 import 'package:simba_ultimate/ui/screens/conversion_screen.dart';
 import 'package:simba_ultimate/ui/screens/profile_screen.dart';
 import 'package:simba_ultimate/ui/screens/send_money_screen.dart';
 import 'package:simba_ultimate/ui/screens/transaction_screen.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -16,20 +17,30 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final currencyFormat = NumberFormat("###,###", "en_US");
+
   int nairaBalance = 0;
   int poundBalance = 0;
   int dollarBalance = 0;
+  String nairaBalanceValue = '₦ 0.00';
+  bool isLoading = false;
 
-  getCurrency() async {
-    Currency currency = Currency();
+  _getCurrency() async {
+    isLoading = true;
+    CurrencyBalance currency = CurrencyBalance();
     List gottenData = await currency.getCurrenciesData();
-    double ngnBalance = gottenData[0]["NGN"];
-    double gbpBalance = gottenData[0]["GBP"];
-    int usdBalance = gottenData[0]["USD"];
+    setState(() {
+      double ngnBalance = gottenData[0]["NGN"];
+      double gbpBalance = gottenData[0]["GBP"];
+      int usdBalance = gottenData[0]["USD"];
 
-    nairaBalance = ngnBalance.toInt();
-    poundBalance = gbpBalance.toInt();
-    dollarBalance = usdBalance.toInt();
+      nairaBalance = ngnBalance.toInt();
+      poundBalance = gbpBalance.toInt();
+      dollarBalance = usdBalance.toInt();
+      nairaBalanceValue = currencyFormat.format(nairaBalance);
+    });
+
+    isLoading = false;
   }
 
   @override
@@ -38,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     Authentication authentication = Authentication();
     authentication.getCurrentUser;
-    getCurrency();
+    _getCurrency();
 
     // authentication.userFirstName();
     // authentication.getDocument();
@@ -113,33 +124,52 @@ class _HomeScreenState extends State<HomeScreen> {
                     imageName: 'usa3.jpeg',
                     currency: 'USD',
                     balance: Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text(
-                        '﹩ $dollarBalance',
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 35),
-                      ),
+                      padding: const EdgeInsets.only(left: 30),
+                      child: isLoading
+                          ? const Text(
+                              '﹩0.00',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 35),
+                            )
+                          : Text(
+                              '﹩$dollarBalance',
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 35),
+                            ),
                     ),
                   ),
                   ReusableCard(
                     imageName: 'uk_flag.jpeg',
                     currency: 'GBP',
                     balance: Padding(
-                      padding: const EdgeInsets.only(left: 22),
-                      child: Text(
-                        '£ $poundBalance',
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 35),
-                      ),
+                      padding: const EdgeInsets.only(left: 40),
+                      child: isLoading
+                          ? const Text(
+                              '£ 0.00',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 35),
+                            )
+                          : Text(
+                              '£ $poundBalance',
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 35),
+                            ),
                     ),
                   ),
                   ReusableCard(
                     imageName: 'nigeria.png',
                     currency: 'NAIRA',
-                    balance: Text(
-                      '₦ $nairaBalance',
-                      style: TextStyle(color: Colors.white, fontSize: 35),
-                    ),
+                    balance: isLoading
+                        ? Text(
+                            nairaBalanceValue,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 35),
+                          )
+                        : Text(
+                            '₦ $nairaBalanceValue',
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 35),
+                          ),
                   ),
                 ],
               ),
