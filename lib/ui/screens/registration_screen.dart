@@ -8,6 +8,7 @@ import 'package:simba_ultimate/components/password_textfield.dart';
 import 'package:simba_ultimate/components/reusable_widget.dart';
 import 'package:simba_ultimate/components/textfield_widget.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
+import 'package:simba_ultimate/services/currency_balance/currency_balance.dart';
 import 'package:simba_ultimate/ui/screens/login_screen.dart';
 import 'package:simba_ultimate/ui/screens/verify_mail_screen.dart';
 import 'navigation_bar_screen.dart';
@@ -30,12 +31,32 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   String _lastName = '';
   String _email = '';
   String _password = '';
+  int nairaBalance = 0;
+  int poundBalance = 0;
+  int dollarBalance = 0;
 
   bool isPasswordHidden = true;
 
   togglePassword() {
     isPasswordHidden = !isPasswordHidden;
     setState(() {});
+  }
+
+  _getCurrency() async {
+    // _isLoading = true;
+    CurrencyBalance currency = CurrencyBalance();
+    List gottenData = await currency.getCurrenciesData();
+    setState(() {
+      double ngnBalance = gottenData[0]["NGN"];
+      double gbpBalance = gottenData[0]["GBP"];
+      int usdBalance = gottenData[0]["USD"];
+
+      nairaBalance = ngnBalance.toInt();
+      poundBalance = gbpBalance.toInt();
+      dollarBalance = usdBalance.toInt();
+    });
+
+    // _isLoading = false;
   }
 
   Future createUser() async {
@@ -48,8 +69,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _email.isNotEmpty &&
         _password.isNotEmpty) {
       if (internet) {
-        final register = await authentication.registerUser(
-            _email, _password, _firstName, _lastName);
+        await _getCurrency();
+        final register = await authentication.registerUser(_email, _password,
+            _firstName, _lastName, dollarBalance, poundBalance, nairaBalance);
         if (register != null) {
           Navigator.push(
               context,

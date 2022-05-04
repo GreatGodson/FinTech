@@ -5,6 +5,7 @@ import 'package:simba_ultimate/constants.dart';
 
 class CurrencyBalance {
   List currencyData = [];
+  // <Map<String,double>>
   List? getCurrency;
   Future getCurrenciesData() async {
     for (String currency in currencyList) {
@@ -18,7 +19,7 @@ class CurrencyBalance {
         currencyData.add(result['result']);
       } else {
         print(response.statusCode);
-        throw 'Problem with Get request';
+        throw 'Problem with Get balance request';
       }
     }
     getCurrency = [

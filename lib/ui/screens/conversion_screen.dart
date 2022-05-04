@@ -3,6 +3,9 @@ import 'package:simba_ultimate/components/button_widget.dart';
 import 'package:simba_ultimate/components/reusable_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:simba_ultimate/components/textfield_widget.dart';
+import 'package:simba_ultimate/services/currency_conversion/currency_conversion.dart';
+import 'package:simba_ultimate/ui/screens/home_screen.dart';
+import 'package:simba_ultimate/ui/screens/navigation_bar_screen.dart';
 
 class ConversionScreen extends StatefulWidget {
   const ConversionScreen({Key? key}) : super(key: key);
@@ -12,12 +15,37 @@ class ConversionScreen extends StatefulWidget {
 }
 
 class _ConversionScreenState extends State<ConversionScreen> {
-  final bool isLoading = false;
-  String currency = 'USD';
-  String newCurrencyVal = 'USD';
+  CurrencyConversion currencyConversion = CurrencyConversion();
 
-  final initialCurrency = ['USD', 'EUR', 'NGN'];
-  final newCurrency = ['USD', 'EUR', 'NGN'];
+  bool isLoading = false;
+  String initialCurrencyValue = 'USD';
+  String finalCurrencyValue = 'GBP';
+  int conversionAmount = 0;
+  int previewedAmount = 0;
+
+  final initialCurrencyList = ['USD', 'GBP', 'NGN'];
+  final finalCurrencyList = ['GBP', 'USD', 'NGN'];
+
+  previewConversion() async {
+    previewedAmount = await currencyConversion.getConversionRates(
+        initialCurrencyValue, finalCurrencyValue, conversionAmount);
+    print(previewedAmount);
+    setState(() {});
+    return previewedAmount;
+  }
+
+  convert() {
+    setState(() {
+      isLoading = true;
+    });
+    conversionAmount = previewedAmount;
+    print(conversionAmount);
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const BottomNavBar()));
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
         value: item,
@@ -35,7 +63,7 @@ class _ConversionScreenState extends State<ConversionScreen> {
         ),
       );
 
-  androidDropdown() {
+  initialCurrencyDropdown() {
     return DropdownButtonHideUnderline(
       child: DropdownButton(
           iconSize: 36,
@@ -46,15 +74,15 @@ class _ConversionScreenState extends State<ConversionScreen> {
           ),
           elevation: 0,
           isExpanded: true,
-          value: currency,
-          items: initialCurrency.map(buildMenuItem).toList(),
+          value: initialCurrencyValue,
+          items: initialCurrencyList.map(buildMenuItem).toList(),
           onChanged: (val) => setState(() {
-                currency = val as String;
+                initialCurrencyValue = val as String;
               })),
     );
   }
 
-  newCurrencyDropdown() {
+  finalCurrencyDropdown() {
     return DropdownButtonHideUnderline(
       child: DropdownButton(
           iconSize: 36,
@@ -65,10 +93,11 @@ class _ConversionScreenState extends State<ConversionScreen> {
           ),
           elevation: 0,
           isExpanded: true,
-          value: newCurrencyVal,
-          items: newCurrency.map(buildMenuItem).toList(),
+          value: finalCurrencyValue,
+          items: finalCurrencyList.map(buildMenuItem).toList(),
           onChanged: (val) => setState(() {
-                newCurrencyVal = val as String;
+                finalCurrencyValue = val as String;
+                previewConversion();
               })),
     );
   }
@@ -111,11 +140,12 @@ class _ConversionScreenState extends State<ConversionScreen> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.0),
                       color: Colors.black),
-                  child: androidDropdown(),
+                  child: initialCurrencyDropdown(),
                 ),
                 TextFieldWidget(
                     onChanged: (val) {
-                      String som = val;
+                      conversionAmount = int.parse(val);
+                      previewConversion();
                     },
                     width: 290.0,
                     hintText: '0.00'),
@@ -143,7 +173,7 @@ class _ConversionScreenState extends State<ConversionScreen> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5.0),
                       color: Colors.black),
-                  child: newCurrencyDropdown(),
+                  child: finalCurrencyDropdown(),
                 ),
                 Container(
                   width: 290.0,
@@ -151,6 +181,13 @@ class _ConversionScreenState extends State<ConversionScreen> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
                       border: Border.all(color: Colors.blueGrey)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      previewedAmount.toString(),
+                      style: const TextStyle(color: Colors.white, fontSize: 17),
+                    ),
+                  ),
                 ),
                 //const TextFieldWidget(width: 290.0, hintText: '0.00'),
               ],
@@ -165,7 +202,9 @@ class _ConversionScreenState extends State<ConversionScreen> {
                         'Convert',
                         style: TextStyle(color: Colors.white),
                       ),
-                onPressed: () {})
+                onPressed: () {
+                  convert();
+                })
           ],
         ),
       ),

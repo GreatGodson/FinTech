@@ -17,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Authentication authentication = Authentication();
   final currencyFormat = NumberFormat("###,###", "en_US");
 
   int nairaBalance = 0;
@@ -24,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int dollarBalance = 0;
   String nairaBalanceValue = '₦ 0.00';
   bool isLoading = false;
+  String firstName = '';
 
   _getCurrency() async {
     isLoading = true;
@@ -43,17 +45,22 @@ class _HomeScreenState extends State<HomeScreen> {
     isLoading = false;
   }
 
+  getFirstName() async {
+    isLoading = true;
+
+    firstName = await authentication.userDetails();
+    setState(() {});
+    isLoading = false;
+  }
+
   @override
   void initState() {
     super.initState();
     // TODO: implement initState
-    Authentication authentication = Authentication();
-    authentication.getCurrentUser;
-    _getCurrency();
 
-    // authentication.userFirstName();
-    // authentication.getDocument();
-    // authentication.userDetails();
+    authentication.getCurrentUser;
+    // _getCurrency();
+    getFirstName();
   }
 
   Widget build(BuildContext context) {
@@ -75,14 +82,16 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Row(
-                children: const [
-                  Text(
-                    'Godson',
-                    style: TextStyle(
-                      fontSize: 30.0,
-                      color: Colors.blueGrey,
-                    ),
-                  ),
+                children: [
+                  isLoading
+                      ? const Text('')
+                      : Text(
+                          firstName,
+                          style: const TextStyle(
+                            fontSize: 30.0,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
                 ],
               ),
             ),

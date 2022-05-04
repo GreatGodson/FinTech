@@ -14,7 +14,8 @@ class Authentication {
   String? exception;
   User? loggedInUser;
 
-  registerUser(email, password, firstName, lastName) async {
+  registerUser(email, password, firstName, lastName, usdBalance, gbpBalance,
+      ngnBalance) async {
     try {
       final newUser = await auth.createUserWithEmailAndPassword(
         email: email,
@@ -28,6 +29,9 @@ class Authentication {
           'lastName': lastName,
           'email': email,
           'password': password,
+          'usdBalance': usdBalance,
+          'gbpBalance': gbpBalance,
+          'ngnBalance': ngnBalance,
         });
         sendVerificationMail();
 
@@ -118,12 +122,9 @@ class Authentication {
   userDetails() async {
     final user = auth.currentUser;
     final userUid = user!.uid;
-    final data = collection.doc(userUid).get();
-    // String name =  data["firstName"];
-    String firstName = data.toString();
+    final data = await collection.doc(userUid).get();
+    String firstName = data["firstName"];
     print(firstName);
-    // final userDetails = await getData();
-    // String firstName = userDetails.toString();
-    // print(firstName);
+    return firstName;
   }
 }
