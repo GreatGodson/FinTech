@@ -96,30 +96,7 @@ class Authentication {
     }
   }
 
-  // userFirstName() async {
-  //   DocumentSnapshot name = await store.collection("users").doc(uid).get();
-  //   final firstName = name['firstName'];
-  //   print(firstName);
-  //   return firstName;
-  // }
-
-  // Future<String> getFirstName() async {
-  //   DocumentReference documentReference = collection.doc(uid);
-  //   String name;
-  //   await documentReference.get().then((snapshot) {
-  //     name = snapshot.data().toString();
-  //   });
-  //   return name;
-  // }
-
-  getData() async {
-    DocumentSnapshot result =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    // print(result);
-    return result;
-  }
-
-  userDetails() async {
+  getUserFirstName() async {
     final user = auth.currentUser;
     final userUid = user!.uid;
     final data = await collection.doc(userUid).get();
@@ -127,4 +104,34 @@ class Authentication {
     print(firstName);
     return firstName;
   }
+
+  getUserDollarBalance() async {
+    final user = auth.currentUser;
+    final userUid = user!.uid;
+    final data = await collection.doc(userUid).get();
+    int dollarBalance = data["usdBalance"];
+    return dollarBalance;
+  }
+
+  getUserGBPBalance() async {
+    final user = auth.currentUser;
+    final userUid = user!.uid;
+    final data = await collection.doc(userUid).get();
+    int gbpBalance = data["gbpBalance"];
+    return gbpBalance;
+  }
+
+  getUserNairaBalance() async {
+    final user = auth.currentUser;
+    final userUid = user!.uid;
+    final data = await collection.doc(userUid).get();
+    int nairaBalance = data["ngnBalance"];
+    return nairaBalance;
+  }
+
+  // getFirstNameAlternatively() async {
+  //   final user = auth.currentUser;
+  //   final userUid = user!.uid;
+  //   var snapshot = collection.doc(userUid).snapshots();
+  // }
 }

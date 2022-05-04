@@ -27,28 +27,19 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
   String firstName = '';
 
-  _getCurrency() async {
-    isLoading = true;
-    CurrencyBalance currency = CurrencyBalance();
-    List gottenData = await currency.getCurrenciesData();
-    setState(() {
-      double ngnBalance = gottenData[0]["NGN"];
-      double gbpBalance = gottenData[0]["GBP"];
-      int usdBalance = gottenData[0]["USD"];
+  getAllBalances() async {
+    nairaBalance = await authentication.getUserNairaBalance();
+    poundBalance = await authentication.getUserGBPBalance();
+    dollarBalance = await authentication.getUserDollarBalance();
+    nairaBalanceValue = currencyFormat.format(nairaBalance);
 
-      nairaBalance = ngnBalance.toInt();
-      poundBalance = gbpBalance.toInt();
-      dollarBalance = usdBalance.toInt();
-      nairaBalanceValue = currencyFormat.format(nairaBalance);
-    });
-
-    isLoading = false;
+    setState(() {});
   }
 
   getFirstName() async {
     isLoading = true;
 
-    firstName = await authentication.userDetails();
+    firstName = await authentication.getUserFirstName();
     setState(() {});
     isLoading = false;
   }
@@ -57,10 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     // TODO: implement initState
-
+    // authentication.getFirstNameAlternatively;
     authentication.getCurrentUser;
-    // _getCurrency();
     getFirstName();
+    getAllBalances();
   }
 
   Widget build(BuildContext context) {
