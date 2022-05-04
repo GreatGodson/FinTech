@@ -8,11 +8,8 @@ class CurrencyConversion {
   int? dollarConversion;
   int? nairaConversion;
 
-  int? gbpBalance;
-  int? usdBalance;
-  int? ngnBalance;
-  Future getConversionRates(
-      String initialCurrency, String finalCurrency, int amount) async {
+  Future getConversionRates(String initialCurrency, String finalCurrency,
+      int amount, int gbpBalance, int usdBalance, int ngnBalance) async {
     int convertedAmount;
     String dataUrl =
         'https://api.apilayer.com/exchangerates_data/convert?to=$finalCurrency&from=$initialCurrency&amount=$amount&apikey=$apikey';
@@ -24,46 +21,72 @@ class CurrencyConversion {
       var rate = result['result'];
       convertedAmount = rate.toInt();
       if (initialCurrency == 'GBP' && finalCurrency == 'USD') {
-        if (amount > gbpBalance!) {
+        if (amount > gbpBalance) {
           print(
               "You do do not have enough GBP balance to complete this transaction ");
         } else {
-          dollarConversion = convertedAmount;
+          dollarConversion = convertedAmount + usdBalance;
+          usdBalance = dollarConversion!;
+          gbpBalance = gbpBalance - convertedAmount;
+
+          print('new usd balance is: $usdBalance');
+          print('new gbp balance is: $gbpBalance');
         }
       } else if (initialCurrency == 'USD' && finalCurrency == 'GBP') {
-        if (amount > usdBalance!) {
+        if (amount > usdBalance) {
           print(
               'you do not have enough USD balance to complete this transaction');
         } else {
-          gbpConversion = convertedAmount;
+          gbpConversion = convertedAmount + gbpBalance;
+          gbpBalance = gbpConversion!;
+          usdBalance = usdBalance - convertedAmount;
+
+          print('new gbp balance is: $gbpBalance');
+          print(' new usd balane is: $usdBalance');
         }
       } else if (initialCurrency == 'GBP' && finalCurrency == 'NGN') {
-        if (amount > gbpBalance!) {
+        if (amount > gbpBalance) {
           print(
               'you do not have enough GBP balance to complete this transaction');
         } else {
-          nairaConversion = convertedAmount;
+          nairaConversion = convertedAmount + ngnBalance;
+          ngnBalance = nairaConversion!;
+          gbpBalance = gbpBalance - convertedAmount;
+          print("new naira balance is : $ngnBalance");
+          print('new gbp balance is : $gbpBalance');
         }
       } else if (initialCurrency == 'NGN' && finalCurrency == 'GBP') {
-        if (amount > ngnBalance!) {
+        if (amount > ngnBalance) {
           print(
               'you do not have enough NGN balance to complete this transaction');
         } else {
-          gbpConversion = convertedAmount;
+          gbpConversion = convertedAmount + gbpBalance;
+          gbpBalance = gbpConversion!;
+          ngnBalance = ngnBalance - convertedAmount;
+          print('new gbp balance is: $gbpBalance');
+          print('new ngn balance : $ngnBalance ');
         }
       } else if (initialCurrency == 'USD' && finalCurrency == 'NGN') {
-        if (amount > usdBalance!) {
+        if (amount > usdBalance) {
           print(
               'you do not have enough USD balance to complete this transaction');
         } else {
-          nairaConversion = convertedAmount;
+          nairaConversion = convertedAmount + ngnBalance;
+          ngnBalance = nairaConversion!;
+          usdBalance = usdBalance - convertedAmount;
+          print('new naira balance is: $ngnBalance');
+          print('new usd balance is : $usdBalance');
         }
       } else if (initialCurrency == 'NGN' && finalCurrency == 'USD') {
-        if (amount > ngnBalance!) {
+        if (amount > ngnBalance) {
           print(
               'you do not have enough NGN balance to complete this transaction');
         } else {
-          dollarConversion = convertedAmount;
+          dollarConversion = convertedAmount + usdBalance;
+          usdBalance = dollarConversion!;
+          ngnBalance = ngnBalance - convertedAmount;
+          print('new usd balance: $usdBalance');
+          print('new naira balance: $ngnBalance');
         }
       }
     } else {

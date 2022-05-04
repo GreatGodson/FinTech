@@ -3,9 +3,11 @@ import 'package:simba_ultimate/components/button_widget.dart';
 import 'package:simba_ultimate/components/reusable_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:simba_ultimate/components/textfield_widget.dart';
+import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:simba_ultimate/services/currency_conversion/currency_conversion.dart';
 import 'package:simba_ultimate/ui/screens/home_screen.dart';
 import 'package:simba_ultimate/ui/screens/navigation_bar_screen.dart';
+import 'package:intl/intl.dart';
 
 class ConversionScreen extends StatefulWidget {
   const ConversionScreen({Key? key}) : super(key: key);
@@ -16,6 +18,7 @@ class ConversionScreen extends StatefulWidget {
 
 class _ConversionScreenState extends State<ConversionScreen> {
   CurrencyConversion currencyConversion = CurrencyConversion();
+  Authentication authentication = Authentication();
 
   bool isLoading = false;
   String initialCurrencyValue = 'USD';
@@ -25,10 +28,32 @@ class _ConversionScreenState extends State<ConversionScreen> {
 
   final initialCurrencyList = ['USD', 'GBP', 'NGN'];
   final finalCurrencyList = ['GBP', 'USD', 'NGN'];
+  final currencyFormat = NumberFormat("###,###", "en_US");
+
+  int nairaBalance = 0;
+  int poundBalance = 0;
+  int dollarBalance = 0;
+  String nairaBalanceValue = '₦ 0.00';
+
+  String firstName = '';
+
+  getAllBalances() async {
+    nairaBalance = await authentication.getUserNairaBalance();
+    poundBalance = await authentication.getUserGBPBalance();
+    dollarBalance = await authentication.getUserDollarBalance();
+    nairaBalanceValue = currencyFormat.format(nairaBalance);
+
+    setState(() {});
+  }
 
   previewConversion() async {
     previewedAmount = await currencyConversion.getConversionRates(
-        initialCurrencyValue, finalCurrencyValue, conversionAmount);
+        initialCurrencyValue,
+        finalCurrencyValue,
+        conversionAmount,
+        poundBalance,
+        dollarBalance,
+        nairaBalance);
     print(previewedAmount);
     setState(() {});
     return previewedAmount;
@@ -100,6 +125,13 @@ class _ConversionScreenState extends State<ConversionScreen> {
                 previewConversion();
               })),
     );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAllBalances();
   }
 
   @override

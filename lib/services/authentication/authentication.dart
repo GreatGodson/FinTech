@@ -11,6 +11,9 @@ class Authentication {
   final auth = FirebaseAuth.instance;
   final store = FirebaseFirestore.instance;
   final collection = FirebaseFirestore.instance.collection('users');
+  final currentUser = FirebaseAuth.instance.currentUser;
+  final loggedInUserUID = FirebaseAuth.instance.currentUser!.uid;
+
   String? exception;
   User? loggedInUser;
 
@@ -42,28 +45,26 @@ class Authentication {
     }
   }
 
-  getCurrentUser() async {
-    final user = auth.currentUser;
+  getCurrentUserEmail() async {
     try {
-      if (user != null) {
-        loggedInUser = user;
+      if (currentUser != null) {
+        loggedInUser = currentUser;
         // print(loggedInUser?.email);
       }
     } on FirebaseAuthException catch (e) {
       print(e.message);
     }
-    print(loggedInUser?.displayName);
     return loggedInUser?.email;
   }
 
   sendVerificationMail() {
-    auth.currentUser?.sendEmailVerification();
+    currentUser?.sendEmailVerification();
   }
 
   Future<bool> checkIfMailVerified() async {
     bool? isEmailVerified;
-    await auth.currentUser?.reload();
-    isEmailVerified = auth.currentUser?.emailVerified;
+    await currentUser?.reload();
+    isEmailVerified = currentUser?.emailVerified;
     print(isEmailVerified);
     return isEmailVerified!;
   }
@@ -97,41 +98,38 @@ class Authentication {
   }
 
   getUserFirstName() async {
-    final user = auth.currentUser;
-    final userUid = user!.uid;
-    final data = await collection.doc(userUid).get();
+    final data = await collection.doc(loggedInUserUID).get();
     String firstName = data["firstName"];
     print(firstName);
     return firstName;
   }
 
   getUserDollarBalance() async {
-    final user = auth.currentUser;
-    final userUid = user!.uid;
-    final data = await collection.doc(userUid).get();
+    final data = await collection.doc(loggedInUserUID).get();
     int dollarBalance = data["usdBalance"];
     return dollarBalance;
   }
 
   getUserGBPBalance() async {
-    final user = auth.currentUser;
-    final userUid = user!.uid;
-    final data = await collection.doc(userUid).get();
+    final data = await collection.doc(loggedInUserUID).get();
     int gbpBalance = data["gbpBalance"];
     return gbpBalance;
   }
 
   getUserNairaBalance() async {
-    final user = auth.currentUser;
-    final userUid = user!.uid;
-    final data = await collection.doc(userUid).get();
+    final data = await collection.doc(loggedInUserUID).get();
     int nairaBalance = data["ngnBalance"];
+
     return nairaBalance;
   }
 
-  // getFirstNameAlternatively() async {
-  //   final user = auth.currentUser;
-  //   final userUid = user!.uid;
-  //   var snapshot = collection.doc(userUid).snapshots();
-  // }
+  getFirstNameAlternatively() async {
+    await for (var snapshot in FirebaseFirestore.instance
+        .collection('users')
+        .doc(loggedInUserUID)
+        .snapshots()) {
+      print('name is: ${snapshot.data()?['firstName']}');
+      print(loggedInUserUID);
+    }
+  }
 }

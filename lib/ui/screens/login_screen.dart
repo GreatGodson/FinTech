@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isNotEmpty && password.isNotEmpty) {
       if (internet) {
-        // authentication.getFirstNameAlternatively();
+        authentication.getFirstNameAlternatively();
         final loggingInUser = await authentication.logInUser(email, password);
         if (loggingInUser != null) {
           isVerified = await authentication.checkIfMailVerified();

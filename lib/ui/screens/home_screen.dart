@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/components/card_widget.dart';
 import 'package:simba_ultimate/components/icons_widget.dart';
+import 'package:simba_ultimate/constants.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:simba_ultimate/services/currency_balance/currency_balance.dart';
 import 'package:simba_ultimate/ui/screens/conversion_screen.dart';
@@ -49,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // TODO: implement initState
     // authentication.getFirstNameAlternatively;
-    authentication.getCurrentUser;
+    authentication.getCurrentUserEmail;
     getFirstName();
     getAllBalances();
   }
@@ -298,6 +300,21 @@ class TransactionRow extends StatelessWidget {
                 ],
               ),
             ),
+            // StreamBuilder(
+            //     stream: FirebaseFirestore.instance
+            //         .collection('users')
+            //         .doc(uid)
+            //         .snapshots(),
+            //     builder: (context, snapshot) {
+            //       if (!snapshot.hasData) {
+            //         return Text('hm');
+            //       }
+            //
+            //       var userDoc = snapshot.data;
+            //
+            //       print(userDoc);
+            //       return SizedBox();
+            //     }),
           ],
         ),
       ),

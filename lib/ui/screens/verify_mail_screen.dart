@@ -32,7 +32,7 @@ class _VerifyMailScreenState extends State<VerifyMailScreen> {
     setState(() {
       isLoading = true;
     });
-    user = await authentication.getCurrentUser();
+    user = await authentication.getCurrentUserEmail();
     setState(() {
       isLoading = false;
     });
