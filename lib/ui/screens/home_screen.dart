@@ -23,23 +23,23 @@ class _HomeScreenState extends State<HomeScreen> {
   Authentication authentication = Authentication();
 
   final currencyFormat = NumberFormat("###,###", "en_US");
-
-  int nairaBalance = 0;
-  int poundBalance = 0;
-  int dollarBalance = 0;
-  String nairaBalanceValue = '₦ 0.00';
+  //
+  // int nairaBalance = 0;
+  // int poundBalance = 0;
+  // int dollarBalance = 0;
+  // String nairaBalanceValue = '₦ 0.00';
   bool isLoading = false;
   String firstName = '';
   String? loggedInUserUid;
 
-  getAllBalances() async {
-    nairaBalance = await authentication.getUserNairaBalance();
-    poundBalance = await authentication.getUserGBPBalance();
-    dollarBalance = await authentication.getUserDollarBalance();
-    nairaBalanceValue = currencyFormat.format(nairaBalance);
-
-    setState(() {});
-  }
+  // getAllBalances() async {
+  //   nairaBalance = await authentication.getUserNairaBalance();
+  //   poundBalance = await authentication.getUserGBPBalance();
+  //   dollarBalance = await authentication.getUserDollarBalance();
+  //   nairaBalanceValue = currencyFormat.format(nairaBalance);
+  //
+  //   setState(() {});
+  // }
 
   // getFirstName() async {
   //   isLoading = true;
@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // authentication.getFirstNameAlternatively;
     authentication.getCurrentUserEmail;
     // getFirstName();
-    getAllBalances();
+    // getAllBalances();
   }
 
   Widget build(BuildContext context) {
@@ -142,53 +142,74 @@ class _HomeScreenState extends State<HomeScreen> {
                   ReusableCard(
                     imageName: 'usa3.jpeg',
                     currency: 'USD',
-                    balance: Padding(
-                      padding: const EdgeInsets.only(left: 30),
-                      child: isLoading
-                          ? const Text(
-                              '﹩0.00',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 35),
-                            )
-                          : Text(
-                              '﹩$dollarBalance',
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 35),
-                            ),
-                    ),
+                    balance:
+                        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                            stream: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Text('0.00');
+                              }
+                              final balanceData = snapshot.data!.data();
+                              final usdBalanceData = balanceData?['usdBalance'];
+                              return Text(
+                                '﹩${usdBalanceData.toString()}',
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 35),
+                              );
+                            }),
                   ),
                   ReusableCard(
                     imageName: 'uk_flag.jpeg',
                     currency: 'GBP',
-                    balance: Padding(
-                      padding: const EdgeInsets.only(left: 40),
-                      child: isLoading
-                          ? const Text(
-                              '£ 0.00',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 35),
-                            )
-                          : Text(
-                              '£ $poundBalance',
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 35),
-                            ),
-                    ),
+                    balance:
+                        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                            stream: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Text('0.00');
+                              }
+                              final balanceData = snapshot.data!.data();
+                              final gbpBalanceData = balanceData?['gbpBalance'];
+                              return Text(
+                                '£ ${gbpBalanceData.toString()}',
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 35),
+                              );
+                            }),
                   ),
                   ReusableCard(
                     imageName: 'nigeria.png',
-                    currency: 'NAIRA',
-                    balance: isLoading
-                        ? Text(
-                            nairaBalanceValue,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 35),
-                          )
-                        : Text(
-                            '₦ $nairaBalanceValue',
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 35),
-                          ),
+                    currency: 'NGN',
+                    balance:
+                        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                            stream: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Text('0.00');
+                              }
+                              final balanceData = snapshot.data!.data();
+                              final nairaBalanceData =
+                                  balanceData?['ngnBalance'];
+                              final currencyFormat =
+                                  NumberFormat("###,###", "en_US");
+                              final ngnBalanceData =
+                                  currencyFormat.format(nairaBalanceData);
+
+                              return Text(
+                                '₦ $ngnBalanceData',
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 35),
+                              );
+                            }),
                   ),
                 ],
               ),

@@ -6,6 +6,7 @@ import 'package:simba_ultimate/components/textfield_widget.dart';
 import 'package:simba_ultimate/constants.dart';
 
 import 'package:flutter/cupertino.dart';
+import 'package:simba_ultimate/services/authentication/authentication.dart';
 
 class SendMoney extends StatefulWidget {
   const SendMoney({Key? key}) : super(key: key);
@@ -15,7 +16,10 @@ class SendMoney extends StatefulWidget {
 }
 
 class _SendMoneyState extends State<SendMoney> {
+  Authentication authentication = Authentication();
+
   int? amount;
+
   final fireStore = FirebaseFirestore.instance;
   static CollectionReference wRef = FirebaseFirestore.instance
       .collection("transactions")

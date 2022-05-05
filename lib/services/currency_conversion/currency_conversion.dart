@@ -1,12 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/constants.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:simba_ultimate/services/authentication/authentication.dart';
+
 class CurrencyConversion {
   int? gbpConversion;
   int? dollarConversion;
   int? nairaConversion;
+  final auth = FirebaseAuth.instance;
+  final collection = FirebaseFirestore.instance.collection('users');
+
+  Authentication authentication = Authentication();
 
   Future getConversionRates(String initialCurrency, String finalCurrency,
       int amount, int gbpBalance, int usdBalance, int ngnBalance) async {
@@ -94,5 +102,17 @@ class CurrencyConversion {
       throw 'Problem with Get conversion request';
     }
     return convertedAmount;
+  }
+
+  updateBalanceData(String updatedBalanceFieldName, updatedBalance,
+      debitedBalanceFieldName, debitedBalance) {
+    User? user = auth.currentUser;
+    final userUid = user!.uid;
+    collection.doc(userUid).update(
+      {
+        updatedBalanceFieldName: updatedBalance,
+        debitedBalanceFieldName: debitedBalance
+      },
+    );
   }
 }
