@@ -36,9 +36,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isNotEmpty && password.isNotEmpty) {
       if (internet) {
-        authentication.getFirstNameAlternatively();
         final loggingInUser = await authentication.logInUser(email, password);
         if (loggingInUser != null) {
+          authentication.getFirstNameAlternatively();
           isVerified = await authentication.checkIfMailVerified();
           if (isVerified!) {
             // Navigator.push(

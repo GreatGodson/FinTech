@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,11 +12,15 @@ class Authentication {
   final auth = FirebaseAuth.instance;
   final store = FirebaseFirestore.instance;
   final collection = FirebaseFirestore.instance.collection('users');
-  final currentUser = FirebaseAuth.instance.currentUser;
-  final loggedInUserUID = FirebaseAuth.instance.currentUser!.uid;
+  // final currentUser = FirebaseAuth.instance.currentUser;
+  // final loggedInUserUID = FirebaseAuth.instance.currentUser!.uid;
 
   String? exception;
   User? loggedInUser;
+
+  // Future getLoggedInUserUid() async {
+  //   return loggedInUserUID;
+  // }
 
   registerUser(email, password, firstName, lastName, usdBalance, gbpBalance,
       ngnBalance) async {
@@ -46,9 +51,10 @@ class Authentication {
   }
 
   getCurrentUserEmail() async {
+    User? user = auth.currentUser;
     try {
-      if (currentUser != null) {
-        loggedInUser = currentUser;
+      if (user != null) {
+        loggedInUser = user;
         // print(loggedInUser?.email);
       }
     } on FirebaseAuthException catch (e) {
@@ -58,13 +64,15 @@ class Authentication {
   }
 
   sendVerificationMail() {
-    currentUser?.sendEmailVerification();
+    User? user = auth.currentUser;
+    user?.sendEmailVerification();
   }
 
   Future<bool> checkIfMailVerified() async {
     bool? isEmailVerified;
-    await currentUser?.reload();
-    isEmailVerified = currentUser?.emailVerified;
+    User? user = auth.currentUser;
+    await user?.reload();
+    isEmailVerified = user?.emailVerified;
     print(isEmailVerified);
     return isEmailVerified!;
   }
@@ -98,38 +106,50 @@ class Authentication {
   }
 
   getUserFirstName() async {
-    final data = await collection.doc(loggedInUserUID).get();
+    User? user = auth.currentUser;
+    final userUid = user!.uid;
+    final data = await collection.doc(userUid).get();
     String firstName = data["firstName"];
     print(firstName);
     return firstName;
   }
 
   getUserDollarBalance() async {
-    final data = await collection.doc(loggedInUserUID).get();
+    User? user = auth.currentUser;
+    final userUid = user!.uid;
+    final data = await collection.doc(userUid).get();
     int dollarBalance = data["usdBalance"];
     return dollarBalance;
   }
 
   getUserGBPBalance() async {
-    final data = await collection.doc(loggedInUserUID).get();
+    User? user = auth.currentUser;
+    final userUid = user!.uid;
+    final data = await collection.doc(userUid).get();
     int gbpBalance = data["gbpBalance"];
     return gbpBalance;
   }
 
   getUserNairaBalance() async {
-    final data = await collection.doc(loggedInUserUID).get();
+    User? user = auth.currentUser;
+    final userUid = user!.uid;
+    final data = await collection.doc(userUid).get();
     int nairaBalance = data["ngnBalance"];
-
+    // print(userUid);
     return nairaBalance;
   }
 
   getFirstNameAlternatively() async {
-    await for (var snapshot in FirebaseFirestore.instance
-        .collection('users')
-        .doc(loggedInUserUID)
-        .snapshots()) {
-      print('name is: ${snapshot.data()?['firstName']}');
-      print(loggedInUserUID);
+    User? user = auth.currentUser;
+    if (user != null) {
+      final userUid = user.uid;
+      await for (var snapshot in FirebaseFirestore.instance
+          .collection('users')
+          .doc(userUid)
+          .snapshots()) {
+        print('name is: ${snapshot.data()?['firstName']}');
+        print(userUid);
+      }
     }
   }
 }

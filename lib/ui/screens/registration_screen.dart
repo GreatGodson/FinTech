@@ -42,7 +42,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     setState(() {});
   }
 
-  _getCurrency() async {
+  _getCurrencyRates() async {
     // _isLoading = true;
     CurrencyBalance currency = CurrencyBalance();
     List gottenData = await currency.getCurrenciesData();
@@ -69,9 +69,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         _email.isNotEmpty &&
         _password.isNotEmpty) {
       if (internet) {
-        await _getCurrency();
+        await _getCurrencyRates();
         final register = await authentication.registerUser(_email, _password,
             _firstName, _lastName, dollarBalance, poundBalance, nairaBalance);
+
         if (register != null) {
           Navigator.push(
               context,

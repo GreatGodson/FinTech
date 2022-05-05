@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/components/card_widget.dart';
 import 'package:simba_ultimate/components/icons_widget.dart';
@@ -20,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Authentication authentication = Authentication();
+
   final currencyFormat = NumberFormat("###,###", "en_US");
 
   int nairaBalance = 0;
@@ -28,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String nairaBalanceValue = '₦ 0.00';
   bool isLoading = false;
   String firstName = '';
+  String? loggedInUserUid;
 
   getAllBalances() async {
     nairaBalance = await authentication.getUserNairaBalance();
@@ -38,13 +41,14 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
-  getFirstName() async {
-    isLoading = true;
-
-    firstName = await authentication.getUserFirstName();
-    setState(() {});
-    isLoading = false;
-  }
+  // getFirstName() async {
+  //   isLoading = true;
+  //
+  //   firstName = await authentication.getUserFirstName();
+  //
+  //   setState(() {});
+  //   isLoading = false;
+  // }
 
   @override
   void initState() {
@@ -52,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     // authentication.getFirstNameAlternatively;
     authentication.getCurrentUserEmail;
-    getFirstName();
+    // getFirstName();
     getAllBalances();
   }
 
@@ -76,15 +80,28 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(top: 8.0),
               child: Row(
                 children: [
-                  isLoading
-                      ? const Text('')
-                      : Text(
-                          firstName,
-                          style: const TextStyle(
-                            fontSize: 30.0,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
+                  Expanded(
+                    child:
+                        StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                            stream: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Text('');
+                              }
+                              final nameData = snapshot.data!.data();
+                              final firstName = nameData?['firstName'];
+                              return Text(
+                                firstName,
+                                style: const TextStyle(
+                                  fontSize: 30.0,
+                                  color: Colors.blueGrey,
+                                ),
+                              );
+                            }),
+                  ),
                 ],
               ),
             ),
@@ -300,21 +317,6 @@ class TransactionRow extends StatelessWidget {
                 ],
               ),
             ),
-            // StreamBuilder(
-            //     stream: FirebaseFirestore.instance
-            //         .collection('users')
-            //         .doc(uid)
-            //         .snapshots(),
-            //     builder: (context, snapshot) {
-            //       if (!snapshot.hasData) {
-            //         return Text('hm');
-            //       }
-            //
-            //       var userDoc = snapshot.data;
-            //
-            //       print(userDoc);
-            //       return SizedBox();
-            //     }),
           ],
         ),
       ),
