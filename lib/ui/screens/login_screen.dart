@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/components/button_widget.dart';
 import 'package:simba_ultimate/components/password_textfield.dart';
-import 'package:simba_ultimate/components/reusable_widget.dart';
 import 'package:simba_ultimate/components/textfield_widget.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
-
 import 'package:flutter/cupertino.dart';
-import 'package:simba_ultimate/ui/screens/doc.dart';
 import 'package:simba_ultimate/ui/screens/navigation_bar_screen.dart';
 import 'package:simba_ultimate/ui/screens/verify_mail_screen.dart';
 
@@ -38,11 +35,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (internet) {
         final loggingInUser = await authentication.logInUser(email, password);
         if (loggingInUser != null) {
-          authentication.getFirstNameAlternatively();
+          // authentication.getFirstNameAlternatively();
           isVerified = await authentication.checkIfMailVerified();
           if (isVerified!) {
-            // Navigator.push(
-            //     context, MaterialPageRoute(builder: (context) => GetDocs()));
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const BottomNavBar()));
           } else {

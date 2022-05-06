@@ -3,9 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/components/card_widget.dart';
 import 'package:simba_ultimate/components/icons_widget.dart';
-import 'package:simba_ultimate/constants.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
-import 'package:simba_ultimate/services/currency_balance/currency_balance.dart';
 import 'package:simba_ultimate/ui/screens/conversion_screen.dart';
 import 'package:simba_ultimate/ui/screens/profile_screen.dart';
 import 'package:simba_ultimate/ui/screens/send_money_screen.dart';
@@ -21,34 +19,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Authentication authentication = Authentication();
-
-  final currencyFormat = NumberFormat("###,###", "en_US");
-  //
-  // int nairaBalance = 0;
-  // int poundBalance = 0;
-  // int dollarBalance = 0;
-  // String nairaBalanceValue = '₦ 0.00';
   bool isLoading = false;
   String firstName = '';
   String? loggedInUserUid;
-
-  // getAllBalances() async {
-  //   nairaBalance = await authentication.getUserNairaBalance();
-  //   poundBalance = await authentication.getUserGBPBalance();
-  //   dollarBalance = await authentication.getUserDollarBalance();
-  //   nairaBalanceValue = currencyFormat.format(nairaBalance);
-  //
-  //   setState(() {});
-  // }
-
-  // getFirstName() async {
-  //   isLoading = true;
-  //
-  //   firstName = await authentication.getUserFirstName();
-  //
-  //   setState(() {});
-  //   isLoading = false;
-  // }
 
   @override
   void initState() {
@@ -56,8 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     // authentication.getFirstNameAlternatively;
     authentication.getCurrentUserEmail;
-    // getFirstName();
-    // getAllBalances();
   }
 
   Widget build(BuildContext context) {

@@ -1,26 +1,16 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:simba_ultimate/constants.dart';
 
 class Authentication {
   final auth = FirebaseAuth.instance;
   final store = FirebaseFirestore.instance;
   final collection = FirebaseFirestore.instance.collection('users');
-  // final currentUser = FirebaseAuth.instance.currentUser;
-  // final loggedInUserUID = FirebaseAuth.instance.currentUser!.uid;
-
   String? exception;
   User? loggedInUser;
-
-  // Future getLoggedInUserUid() async {
-  //   return loggedInUserUID;
-  // }
 
   registerUser(email, password, firstName, lastName, usdBalance, gbpBalance,
       ngnBalance) async {
@@ -105,51 +95,12 @@ class Authentication {
     }
   }
 
-  getUserFirstName() async {
-    User? user = auth.currentUser;
-    final userUid = user!.uid;
-    final data = await collection.doc(userUid).get();
-    String firstName = data["firstName"];
-    print(firstName);
-    return firstName;
-  }
+  // getUserDollarBalance() async {
+  //   User? user = auth.currentUser;
+  //   final userUid = user!.uid;
+  //   final data = await collection.doc(userUid).get();
+  //   int dollarBalance = data["usdBalance"];
+  //   return dollarBalance;
+  // }
 
-  getUserDollarBalance() async {
-    User? user = auth.currentUser;
-    final userUid = user!.uid;
-    final data = await collection.doc(userUid).get();
-    int dollarBalance = data["usdBalance"];
-    return dollarBalance;
-  }
-
-  getUserGBPBalance() async {
-    User? user = auth.currentUser;
-    final userUid = user!.uid;
-    final data = await collection.doc(userUid).get();
-    int gbpBalance = data["gbpBalance"];
-    return gbpBalance;
-  }
-
-  getUserNairaBalance() async {
-    User? user = auth.currentUser;
-    final userUid = user!.uid;
-    final data = await collection.doc(userUid).get();
-    int nairaBalance = data["ngnBalance"];
-    // print(userUid);
-    return nairaBalance;
-  }
-
-  getFirstNameAlternatively() async {
-    User? user = auth.currentUser;
-    if (user != null) {
-      final userUid = user.uid;
-      await for (var snapshot in FirebaseFirestore.instance
-          .collection('users')
-          .doc(userUid)
-          .snapshots()) {
-        print('name is: ${snapshot.data()?['firstName']}');
-        print(userUid);
-      }
-    }
-  }
 }

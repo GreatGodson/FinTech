@@ -1,17 +1,13 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/components/button_widget.dart';
 import 'package:simba_ultimate/components/password_textfield.dart';
-import 'package:simba_ultimate/components/reusable_widget.dart';
 import 'package:simba_ultimate/components/textfield_widget.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:simba_ultimate/services/currency_balance/currency_balance.dart';
 import 'package:simba_ultimate/ui/screens/login_screen.dart';
 import 'package:simba_ultimate/ui/screens/verify_mail_screen.dart';
-import 'navigation_bar_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -34,7 +30,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   int nairaBalance = 0;
   int poundBalance = 0;
   int dollarBalance = 0;
-
   bool isPasswordHidden = true;
 
   togglePassword() {

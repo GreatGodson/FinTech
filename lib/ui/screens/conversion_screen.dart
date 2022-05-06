@@ -1,11 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/components/button_widget.dart';
-import 'package:simba_ultimate/components/reusable_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:simba_ultimate/components/textfield_widget.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:simba_ultimate/services/currency_conversion/currency_conversion.dart';
-import 'package:simba_ultimate/ui/screens/home_screen.dart';
 import 'package:simba_ultimate/ui/screens/navigation_bar_screen.dart';
 import 'package:intl/intl.dart';
 
@@ -20,53 +20,167 @@ class _ConversionScreenState extends State<ConversionScreen> {
   CurrencyConversion currencyConversion = CurrencyConversion();
   Authentication authentication = Authentication();
 
+  final auth = FirebaseAuth.instance;
+  final collection = FirebaseFirestore.instance.collection('users');
+
   bool isLoading = false;
-  String initialCurrencyValue = 'USD';
-  String finalCurrencyValue = 'GBP';
+  String debitCurrencyField = 'USD';
+  String creditCurrencyField = 'GBP';
   int conversionAmount = 0;
-  int previewedAmount = 0;
+  int convertedAmount = 0;
+  int previewConversionValue = 0;
+  int nairaBalance = 0;
+  int poundBalance = 0;
+  int dollarBalance = 0;
+  String nairaBalanceValue = '₦ 0.00';
+  bool isConversionSuccessful = false;
 
   final initialCurrencyList = ['USD', 'GBP', 'NGN'];
   final finalCurrencyList = ['GBP', 'USD', 'NGN'];
   final currencyFormat = NumberFormat("###,###", "en_US");
 
-  int nairaBalance = 0;
-  int poundBalance = 0;
-  int dollarBalance = 0;
-  String nairaBalanceValue = '₦ 0.00';
-
-  String firstName = '';
-
-  getAllBalances() async {
-    nairaBalance = await authentication.getUserNairaBalance();
-    poundBalance = await authentication.getUserGBPBalance();
-    dollarBalance = await authentication.getUserDollarBalance();
-    nairaBalanceValue = currencyFormat.format(nairaBalance);
-
-    setState(() {});
-  }
-
   previewConversion() async {
-    previewedAmount = await currencyConversion.getConversionRates(
-        initialCurrencyValue,
-        finalCurrencyValue,
+    if (conversionAmount <= 0) {
+      previewConversionValue = 0;
+    } else {
+      previewConversionValue = await currencyConversion.getConversionRates(
+        debitCurrencyField,
+        creditCurrencyField,
         conversionAmount,
-        poundBalance,
-        dollarBalance,
-        nairaBalance);
-    print(previewedAmount);
-    setState(() {});
-    return previewedAmount;
+      );
+      setState(() {});
+    }
+
+    return previewConversionValue;
   }
 
   convert() {
+    // setState(() {
+    //   isLoading = true;
+    // });
+    convertedAmount = previewConversionValue;
+    updateBalanceData();
+    if (isConversionSuccessful) {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const BottomNavBar()));
+    }
+    // setState(() {
+    //   isLoading = false;
+    // });
+  }
+
+  streamBalances() async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      final userUid = user.uid;
+      await for (var snapshot in FirebaseFirestore.instance
+          .collection('users')
+          .doc(userUid)
+          .snapshots()) {
+        dollarBalance = snapshot.data()?['usdBalance'];
+        poundBalance = snapshot.data()?['gbpBalance'];
+        nairaBalance = snapshot.data()?['ngnBalance'];
+      }
+    }
+  }
+
+  updateBalanceData() {
     setState(() {
       isLoading = true;
     });
-    conversionAmount = previewedAmount;
-    print(conversionAmount);
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const BottomNavBar()));
+    User? user = auth.currentUser;
+    final userUid = user!.uid;
+    if (debitCurrencyField == 'USD' && creditCurrencyField == 'GBP') {
+      if (conversionAmount > dollarBalance) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                'You do not have enough USD balance to make this conversion')));
+      } else {
+        setState(() {
+          dollarBalance = dollarBalance - conversionAmount;
+          poundBalance = poundBalance + convertedAmount;
+          isConversionSuccessful = true;
+        });
+        collection.doc(userUid).update(
+          {"usdBalance": dollarBalance, "gbpBalance": poundBalance},
+        );
+      }
+    } else if (debitCurrencyField == 'USD' && creditCurrencyField == 'NGN') {
+      if (conversionAmount > dollarBalance) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                'You do not have enough USD balance to make this conversion')));
+      } else {
+        setState(() {
+          dollarBalance = dollarBalance - conversionAmount;
+          nairaBalance = nairaBalance + convertedAmount;
+          isConversionSuccessful = true;
+        });
+        collection.doc(userUid).update(
+          {"usdBalance": dollarBalance, "ngnBalance": nairaBalance},
+        );
+      }
+    } else if (debitCurrencyField == 'GBP' && creditCurrencyField == 'USD') {
+      if (conversionAmount > poundBalance) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                'You do not have enough GBP balance to make this conversion')));
+      } else {
+        setState(() {
+          poundBalance = poundBalance - conversionAmount;
+          dollarBalance = dollarBalance + convertedAmount;
+          isConversionSuccessful = true;
+        });
+        collection.doc(userUid).update(
+          {"usdBalance": dollarBalance, "gbpBalance": poundBalance},
+        );
+      }
+    } else if (debitCurrencyField == 'GBP' && creditCurrencyField == 'NGN') {
+      if (conversionAmount > poundBalance) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                'You do not have enough GBP balance to make this conversion')));
+      } else {
+        setState(() {
+          poundBalance = poundBalance - conversionAmount;
+          nairaBalance = nairaBalance + convertedAmount;
+          isConversionSuccessful = true;
+        });
+        collection.doc(userUid).update(
+          {"gbpBalance": poundBalance, "ngnBalance": nairaBalance},
+        );
+      }
+    } else if (debitCurrencyField == 'NGN' && creditCurrencyField == 'USD') {
+      if (conversionAmount > dollarBalance) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                'You do not have enough NGN balance to make this conversion')));
+      } else {
+        setState(() {
+          nairaBalance = nairaBalance - conversionAmount;
+          dollarBalance = dollarBalance + convertedAmount;
+          isConversionSuccessful = true;
+        });
+        collection.doc(userUid).update(
+          {"usdBalance": dollarBalance, "ngnBalance": nairaBalance},
+        );
+      }
+    } else if (debitCurrencyField == 'NGN' && creditCurrencyField == 'GBP') {
+      if (conversionAmount > dollarBalance) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                'You do not have enough NGN balance to make this conversion')));
+      } else {
+        setState(() {
+          nairaBalance = nairaBalance - conversionAmount;
+          poundBalance = poundBalance + convertedAmount;
+          isConversionSuccessful = true;
+        });
+        collection.doc(userUid).update(
+          {"ngnBalance": nairaBalance, "gbpBalance": poundBalance},
+        );
+      }
+    }
     setState(() {
       isLoading = false;
     });
@@ -99,10 +213,10 @@ class _ConversionScreenState extends State<ConversionScreen> {
           ),
           elevation: 0,
           isExpanded: true,
-          value: initialCurrencyValue,
+          value: debitCurrencyField,
           items: initialCurrencyList.map(buildMenuItem).toList(),
           onChanged: (val) => setState(() {
-                initialCurrencyValue = val as String;
+                debitCurrencyField = val as String;
               })),
     );
   }
@@ -118,10 +232,10 @@ class _ConversionScreenState extends State<ConversionScreen> {
           ),
           elevation: 0,
           isExpanded: true,
-          value: finalCurrencyValue,
+          value: creditCurrencyField,
           items: finalCurrencyList.map(buildMenuItem).toList(),
           onChanged: (val) => setState(() {
-                finalCurrencyValue = val as String;
+                creditCurrencyField = val as String;
                 previewConversion();
               })),
     );
@@ -131,7 +245,7 @@ class _ConversionScreenState extends State<ConversionScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getAllBalances();
+    streamBalances();
   }
 
   @override
@@ -176,7 +290,11 @@ class _ConversionScreenState extends State<ConversionScreen> {
                 ),
                 TextFieldWidget(
                     onChanged: (val) {
-                      conversionAmount = int.parse(val);
+                      try {
+                        conversionAmount = int.parse(val);
+                      } on FormatException {
+                        conversionAmount = 0;
+                      }
                       previewConversion();
                     },
                     width: 290.0,
@@ -216,7 +334,7 @@ class _ConversionScreenState extends State<ConversionScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Text(
-                      previewedAmount.toString(),
+                      previewConversionValue.toString(),
                       style: const TextStyle(color: Colors.white, fontSize: 17),
                     ),
                   ),
@@ -236,7 +354,7 @@ class _ConversionScreenState extends State<ConversionScreen> {
                       ),
                 onPressed: () {
                   convert();
-                })
+                }),
           ],
         ),
       ),
