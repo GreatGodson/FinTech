@@ -70,69 +70,75 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double mediaSize = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
         automaticallyImplyLeading: false,
         title: const Text('Login'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextFieldWidget(
-              onChanged: (val) {
-                email = val;
-              },
-              width: 350,
-              hintText: 'E-mail',
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            PasswordTextFieldWidget(
-              isPasswordHidden: isPasswordHidden,
-              onChanged: (val) {
-                password = val.trim();
-              },
-              onTap: togglePassword,
-              width: 350,
-              hintText: 'password',
-            ),
-            const SizedBox(
-              height: 40.0,
-            ),
-            TextButtonWidget(
-              child: isLoading
-                  ? const CupertinoActivityIndicator()
-                  : const Text(
-                      'Login',
-                      style: TextStyle(color: Colors.white),
-                    ),
-              onPressed: () {
-                login();
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 30.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Don\'t have an account?',
-                    style: TextStyle(color: Colors.grey),
+      body: SafeArea(
+        child: ListView(children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextFieldWidget(
+                  onChanged: (val) {
+                    email = val;
+                  },
+                  width: double.infinity,
+                  hintText: 'E-mail',
+                ),
+                const SizedBox(
+                  height: 20.0,
+                ),
+                PasswordTextFieldWidget(
+                  isPasswordHidden: isPasswordHidden,
+                  onChanged: (val) {
+                    password = val.trim();
+                  },
+                  onTap: togglePassword,
+                  width: double.infinity,
+                  hintText: 'password',
+                ),
+                const SizedBox(
+                  height: 40.0,
+                ),
+                TextButtonWidget(
+                  child: isLoading
+                      ? const CupertinoActivityIndicator()
+                      : const Text(
+                          'Login',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                  onPressed: () {
+                    login();
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 30.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Don\'t have an account?',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Create an account'))
+                    ],
                   ),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Create an account'))
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ]),
       ),
     );
   }

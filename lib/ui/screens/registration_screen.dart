@@ -94,93 +94,99 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: const Text('Create an account'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SafeArea(
+        child: ListView(children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextFieldWidget(
-                  onChanged: (val) {
-                    _firstName = val.trim();
-                  },
-                  width: 170,
-                  hintText: 'First Name',
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextFieldWidget(
+                      onChanged: (val) {
+                        _firstName = val.trim();
+                      },
+                      width: width / 2.4,
+                      hintText: 'First Name',
+                    ),
+                    TextFieldWidget(
+                      width: width / 2.4,
+                      hintText: 'Last Name',
+                      onChanged: (val) {
+                        _lastName = val.trim();
+                      },
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 30.0,
                 ),
                 TextFieldWidget(
-                  width: 170,
-                  hintText: 'Last Name',
                   onChanged: (val) {
-                    _lastName = val.trim();
+                    _email = val.trim();
                   },
-                )
+                  width: double.infinity,
+                  hintText: 'E-mail',
+                ),
+                const SizedBox(
+                  height: 30.0,
+                ),
+                PasswordTextFieldWidget(
+                  isPasswordHidden: isPasswordHidden,
+                  onChanged: (val) {
+                    _password = val.trim();
+                  },
+                  onTap: togglePassword,
+                  width: double.infinity,
+                  hintText: 'password',
+                ),
+                SizedBox(
+                  height: height / 20,
+                ),
+                TextButtonWidget(
+                  child: _isLoading
+                      ? const CupertinoActivityIndicator()
+                      : const Text(
+                          'Sign Up',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                  onPressed: () {
+                    createUser();
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 30.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Already have an account?',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginScreen()));
+                          },
+                          child: const Text('Log in'))
+                    ],
+                  ),
+                ),
               ],
             ),
-            const SizedBox(
-              height: 30.0,
-            ),
-            TextFieldWidget(
-              onChanged: (val) {
-                _email = val.trim();
-              },
-              width: 350,
-              hintText: 'E-mail',
-            ),
-            const SizedBox(
-              height: 30.0,
-            ),
-            PasswordTextFieldWidget(
-              isPasswordHidden: isPasswordHidden,
-              onChanged: (val) {
-                _password = val.trim();
-              },
-              onTap: togglePassword,
-              width: 350,
-              hintText: 'password',
-            ),
-            const SizedBox(
-              height: 40.0,
-            ),
-            TextButtonWidget(
-              child: _isLoading
-                  ? const CupertinoActivityIndicator()
-                  : const Text(
-                      'Sign Up',
-                      style: TextStyle(color: Colors.white),
-                    ),
-              onPressed: () {
-                createUser();
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 30.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Already have an account?',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()));
-                      },
-                      child: const Text('Log in'))
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ]),
       ),
     );
   }

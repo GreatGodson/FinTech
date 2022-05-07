@@ -2,6 +2,7 @@
 
 This project uses transactions in Firebase(FirebaseAuth and FireStore) to send and receive virtual money across accounts.
 On account creation, a user has $500 worth of money across 3 wallets, in different currencies(NGN,USD,GBP).
+A user can make conversions from one currency to another currency across the three wallets depending on a user's wallet balance.
 
 
 ## Inspiration
@@ -26,7 +27,7 @@ Design inspiration by me 😎
 
 ⚡ Three wallets with three different currencies(USD,GBP, NGN)
 
-⚡ Conversion from one currency to another currency(wallet to wallet) *WIP* 
+⚡ Conversion from one currency to another currency(wallet to wallet) 
 
 ⚡ Transfer and receive from any currency *WIP* 
 
