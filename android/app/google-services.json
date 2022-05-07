@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "546737249240",
+    "project_id": "simbaultimate-6fd07",
+    "storage_bucket": "simbaultimate-6fd07.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546737249240:android:a77767a99a332c5f52f0ad",
+        "android_client_info": {
+          "package_name": "com.example.simba_ultimate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546737249240-m6l2ift4ou4dpl8fpqo87pvrbpet8hic.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-fc9Z8eOVES1pYe8l2arAOKsC-6DKqao"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546737249240-m6l2ift4ou4dpl8fpqo87pvrbpet8hic.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "546737249240-nn6sdidj1hltlo54itd4i8vs4hmu9drc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "co.godson.simbaUltimate"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -27,11 +27,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     // TODO: implement initState
-    // authentication.getFirstNameAlternatively;
     authentication.getCurrentUserEmail;
   }
 
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100.0,
@@ -227,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SizedBox(
-              height: 300.0,
+              height: height / 3,
               child: ListView(
                 children: const [
                   TransactionRow(
@@ -265,48 +265,54 @@ class TransactionRow extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 30.0,
-                  height: 30.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5.0),
-                      color: Colors.black),
-                  child: const Icon(
-                    Icons.mark_chat_read,
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(
-                  width: 10.0,
-                ),
-                Text(
-                  transactionType,
-                  style: const TextStyle(color: Colors.green, fontSize: 18.0),
-                ),
-                //SizedBox(width: MediaQuery.of(context).size.width * 0.42),
-                const Spacer(),
-                const Padding(
-                  padding: EdgeInsets.only(top: 20.0),
-                  child: Text(
-                    '\$1,000',
-                    style: TextStyle(color: Colors.green),
-                  ),
-                )
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 4.0, top: 4.0),
+            Expanded(
               child: Row(
-                children: const [
-                  Text(
-                    '12th, Feb. 2022',
-                    style: TextStyle(
-                        color: Colors.grey, fontSize: 13.0, letterSpacing: 2.0),
+                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 30.0,
+                    height: 30.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        color: Colors.black),
+                    child: const Icon(
+                      Icons.mark_chat_read,
+                      color: Colors.green,
+                    ),
                   ),
+                  const SizedBox(
+                    width: 10.0,
+                  ),
+                  Text(
+                    transactionType,
+                    style: const TextStyle(color: Colors.green, fontSize: 18.0),
+                  ),
+                  //SizedBox(width: MediaQuery.of(context).size.width * 0.42),
+                  const Spacer(),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 20.0),
+                    child: Text(
+                      '\$1,000',
+                      style: TextStyle(color: Colors.green),
+                    ),
+                  )
                 ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 4.0, top: 4.0),
+                child: Row(
+                  children: const [
+                    Text(
+                      '12th, Feb. 2022',
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 13.0,
+                          letterSpacing: 2.0),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
