@@ -60,15 +60,66 @@ class _VerifyMailScreenState extends State<VerifyMailScreen> {
     return isVerified
         ? const BottomNavBar()
         : Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.black,
+              automaticallyImplyLeading: false,
+              elevation: 0.0,
+              title: const Text(
+                'Welcome',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
             body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 isLoading
                     ? const CupertinoActivityIndicator()
-                    : Text(
-                        'A verification link was sent to: $user, please verify your email address ',
-                        style: const TextStyle(color: Colors.white70),
+                    : Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 30, left: 10, top: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text(
+                              'Please verify your email address',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                          ],
+                        ),
                       ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 5, right: 5),
+                        child: Text(
+                          'A verification link was sent to $user. Kindly verify your mail.',
+                          style: const TextStyle(
+                              color: Colors.white70, fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Didn\'t get a verification link?',
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          'send link',
+                          style: TextStyle(color: Colors.blue, fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           );

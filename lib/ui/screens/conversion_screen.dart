@@ -8,6 +8,7 @@ import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:simba_ultimate/services/currency_conversion/currency_conversion.dart';
 import 'package:simba_ultimate/ui/screens/navigation_bar_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:simba_ultimate/constants.dart';
 
 class ConversionScreen extends StatefulWidget {
   const ConversionScreen({Key? key}) : super(key: key);
@@ -75,11 +76,15 @@ class _ConversionScreenState extends State<ConversionScreen> {
       final userUid = user.uid;
       await for (var snapshot in FirebaseFirestore.instance
           .collection('users')
-          .doc(userUid)
+          .doc(uid)
           .snapshots()) {
         dollarBalance = snapshot.data()?['usdBalance'];
         poundBalance = snapshot.data()?['gbpBalance'];
         nairaBalance = snapshot.data()?['ngnBalance'];
+
+        print(dollarBalance);
+        print(poundBalance);
+        print(nairaBalance);
       }
     }
   }
@@ -151,7 +156,7 @@ class _ConversionScreenState extends State<ConversionScreen> {
         );
       }
     } else if (debitCurrencyField == 'NGN' && creditCurrencyField == 'USD') {
-      if (conversionAmount > dollarBalance) {
+      if (conversionAmount > nairaBalance) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
                 'You do not have enough NGN balance to make this conversion')));
@@ -166,7 +171,7 @@ class _ConversionScreenState extends State<ConversionScreen> {
         );
       }
     } else if (debitCurrencyField == 'NGN' && creditCurrencyField == 'GBP') {
-      if (conversionAmount > dollarBalance) {
+      if (conversionAmount > nairaBalance) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
                 'You do not have enough NGN balance to make this conversion')));
@@ -259,105 +264,108 @@ class _ConversionScreenState extends State<ConversionScreen> {
           style: TextStyle(color: Colors.grey),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
-              child: Row(
-                children: const [
-                  Text(
-                    'From',
-                    style: TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 2.0,
-                        fontSize: 17.0),
-                  )
-                ],
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  width: 80.0,
-                  height: 70.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5.0),
-                      color: Colors.black),
-                  child: initialCurrencyDropdown(),
+      body: ListView(children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Row(
+                  children: const [
+                    Text(
+                      'From',
+                      style: TextStyle(
+                          color: Colors.white,
+                          letterSpacing: 2.0,
+                          fontSize: 17.0),
+                    )
+                  ],
                 ),
-                TextFieldWidget(
-                    onChanged: (val) {
-                      try {
-                        conversionAmount = int.parse(val);
-                      } on FormatException {
-                        conversionAmount = 0;
-                      }
-                      previewConversion();
-                    },
-                    width: 290.0,
-                    hintText: '0.00'),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 50.0, bottom: 10.0),
-              child: Row(
-                children: const [
-                  Text(
-                    'To',
-                    style: TextStyle(
-                        color: Colors.white,
-                        letterSpacing: 2.0,
-                        fontSize: 17.0),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    width: 80.0,
+                    height: 70.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        color: Colors.black),
+                    child: initialCurrencyDropdown(),
                   ),
+                  TextFieldWidget(
+                      onChanged: (val) {
+                        try {
+                          conversionAmount = int.parse(val);
+                        } on FormatException {
+                          conversionAmount = 0;
+                        }
+                        previewConversion();
+                      },
+                      width: 290.0,
+                      hintText: '0.00'),
                 ],
               ),
-            ),
-            Row(
-              children: [
-                Container(
-                  width: 80.0,
-                  height: 70.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5.0),
-                      color: Colors.black),
-                  child: finalCurrencyDropdown(),
+              Padding(
+                padding: const EdgeInsets.only(top: 50.0, bottom: 10.0),
+                child: Row(
+                  children: const [
+                    Text(
+                      'To',
+                      style: TextStyle(
+                          color: Colors.white,
+                          letterSpacing: 2.0,
+                          fontSize: 17.0),
+                    ),
+                  ],
                 ),
-                Container(
-                  width: 290.0,
-                  height: 50.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      border: Border.all(color: Colors.blueGrey)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Text(
-                      previewConversionValue.toString(),
-                      style: const TextStyle(color: Colors.white, fontSize: 17),
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: 80.0,
+                    height: 70.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        color: Colors.black),
+                    child: finalCurrencyDropdown(),
+                  ),
+                  Container(
+                    width: 290.0,
+                    height: 50.0,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        border: Border.all(color: Colors.blueGrey)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(
+                        previewConversionValue.toString(),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 17),
+                      ),
                     ),
                   ),
-                ),
-                //const TextFieldWidget(width: 290.0, hintText: '0.00'),
-              ],
-            ),
-            const SizedBox(
-              height: 45.0,
-            ),
-            TextButtonWidget(
-                child: isLoading
-                    ? const CupertinoActivityIndicator()
-                    : const Text(
-                        'Convert',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                onPressed: () {
-                  convert();
-                }),
-          ],
+                  //const TextFieldWidget(width: 290.0, hintText: '0.00'),
+                ],
+              ),
+              const SizedBox(
+                height: 45.0,
+              ),
+              TextButtonWidget(
+                  child: isLoading
+                      ? const CupertinoActivityIndicator()
+                      : const Text(
+                          'Convert',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                  onPressed: () {
+                    convert();
+                  }),
+            ],
+          ),
         ),
-      ),
+      ]),
     );
   }
 }

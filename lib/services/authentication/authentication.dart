@@ -68,9 +68,14 @@ class Authentication {
   }
 
   logInUser(email, password) async {
+    // var cred = await FirebaseAuth.instance.signInAnonymously();
+    //   uid = cred.user!.uid;
+
     try {
       final user = await auth.signInWithEmailAndPassword(
           email: email, password: password);
+      uid = user.user!.uid;
+      print("the user uid is: $uid");
 
       return user.user;
     } on FirebaseAuthException catch (e) {
