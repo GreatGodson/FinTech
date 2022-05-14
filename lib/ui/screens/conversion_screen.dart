@@ -41,7 +41,7 @@ class _ConversionScreenState extends State<ConversionScreen> {
   final currencyFormat = NumberFormat("###,###", "en_US");
 
   previewConversion() async {
-    if (conversionAmount <= 0) {
+    if (conversionAmount <= 0 || debitCurrencyField == creditCurrencyField) {
       previewConversionValue = 0;
     } else {
       previewConversionValue = await currencyConversion.getConversionRates(

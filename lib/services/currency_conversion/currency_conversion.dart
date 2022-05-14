@@ -17,16 +17,26 @@ class CurrencyConversion {
   Future getConversionRates(
       String initialCurrency, String finalCurrency, int amount) async {
     int convertedAmount;
+
     String dataUrl =
-        'https://api.apilayer.com/exchangerates_data/convert?to=$finalCurrency&from=$initialCurrency&amount=$amount&apikey=$apikey';
+        'https://api.apilayer.com/exchangerates_data/convert?to=$finalCurrency&from=$initialCurrency&amount=$amount';
+    // &apikey=$apikey
+
+    Map<String, String> headers = {
+      authorization: token,
+      "Content-Type": "application/json",
+    };
+
     var url = Uri.parse(dataUrl);
-    http.Response response = await http.get(url);
+    http.Response response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
+      print('successful');
       String jsonFormat = response.body;
       var result = jsonDecode(jsonFormat);
       var rate = result['result'];
       convertedAmount = rate.toInt();
     } else {
+      print('problem');
       print('status code is: ${response.statusCode}');
       throw 'Problem with Get conversion request';
     }
