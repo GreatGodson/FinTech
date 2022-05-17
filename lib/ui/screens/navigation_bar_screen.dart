@@ -21,32 +21,35 @@ class _BottomNavBarState extends State<BottomNavBar> {
   ];
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: currentIndex,
-        children: screens,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
-        elevation: 0.0,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        iconSize: 30.0,
-        currentIndex: currentIndex,
-        onTap: (index) => setState(() => currentIndex = index),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.send),
-            label: 'Send',
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.rotate_right_outlined), label: 'Convert'),
-        ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: IndexedStack(
+          index: currentIndex,
+          children: screens,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.black,
+          elevation: 0.0,
+          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.grey,
+          iconSize: 30.0,
+          currentIndex: currentIndex,
+          onTap: (index) => setState(() => currentIndex = index),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.send),
+              label: 'Send',
+            ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.rotate_right_outlined), label: 'Convert'),
+          ],
+        ),
       ),
     );
   }

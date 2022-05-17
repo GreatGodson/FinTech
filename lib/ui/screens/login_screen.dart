@@ -15,40 +15,39 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  Authentication authentication = Authentication();
-  bool isLoading = false;
-  bool? isVerified;
-  bool isPasswordHidden = true;
+  final Authentication _authentication = Authentication();
+  bool _isLoading = false;
+  bool? _isVerified;
+  bool _isPasswordHidden = true;
 
-  togglePassword() {
-    isPasswordHidden = !isPasswordHidden;
+  void _togglePassword() {
+    _isPasswordHidden = !_isPasswordHidden;
     setState(() {});
   }
 
-  login() async {
+  void _loginUser() async {
     setState(() {
-      isLoading = true;
+      _isLoading = true;
     });
-    bool internet = await authentication.checkInternetConnectivity();
-
-    if (email.isNotEmpty && password.isNotEmpty) {
+    bool internet = await _authentication.checkInternetConnectivity();
+    if (_email.isNotEmpty && _password.isNotEmpty) {
       if (internet) {
-        final loggingInUser = await authentication.logInUser(email, password);
+        final loggingInUser =
+            await _authentication.logInUser(_email, _password);
         if (loggingInUser != null) {
-          // authentication.getFirstNameAlternatively();
-          isVerified = await authentication.checkIfMailVerified();
-          if (isVerified!) {
+          _isVerified = await _authentication.checkIfMailVerified();
+          if (_isVerified!) {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const BottomNavBar()));
           } else {
-            authentication.sendVerificationMail();
+            _authentication.sendVerificationMail();
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => const VerifyMailScreen()));
           }
         } else {
-          final exception = authentication.exception;
+          final exception = _authentication.exception;
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text('username or password is incorrect')));
         }
@@ -61,12 +60,12 @@ class _LoginScreenState extends State<LoginScreen> {
           const SnackBar(content: Text('Please fill all fields')));
     }
     setState(() {
-      isLoading = false;
+      _isLoading = false;
     });
   }
 
-  String email = '';
-  String password = '';
+  String _email = '';
+  String _password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 TextFieldWidget(
                   onChanged: (val) {
-                    email = val;
+                    _email = val;
                   },
                   width: double.infinity,
                   hintText: 'E-mail',
@@ -96,11 +95,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 20.0,
                 ),
                 PasswordTextFieldWidget(
-                  isPasswordHidden: isPasswordHidden,
+                  isPasswordHidden: _isPasswordHidden,
                   onChanged: (val) {
-                    password = val.trim();
+                    _password = val.trim();
                   },
-                  onTap: togglePassword,
+                  onTap: _togglePassword,
                   width: double.infinity,
                   hintText: 'password',
                 ),
@@ -108,14 +107,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 40.0,
                 ),
                 TextButtonWidget(
-                  child: isLoading
+                  child: _isLoading
                       ? const CupertinoActivityIndicator()
                       : const Text(
                           'Login',
                           style: TextStyle(color: Colors.white),
                         ),
                   onPressed: () {
-                    login();
+                    _loginUser();
                   },
                 ),
                 Padding(

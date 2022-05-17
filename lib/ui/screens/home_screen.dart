@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/components/card_widget.dart';
 import 'package:simba_ultimate/components/icons_widget.dart';
+import 'package:simba_ultimate/constants.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:simba_ultimate/ui/screens/conversion_screen.dart';
 import 'package:simba_ultimate/ui/screens/profile_screen.dart';
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                             stream: FirebaseFirestore.instance
                                 .collection('users')
-                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .doc(uid)
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
@@ -117,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                             stream: FirebaseFirestore.instance
                                 .collection('users')
-                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .doc(uid)
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
@@ -139,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                             stream: FirebaseFirestore.instance
                                 .collection('users')
-                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .doc(uid)
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
@@ -161,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                             stream: FirebaseFirestore.instance
                                 .collection('users')
-                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .doc(uid)
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {

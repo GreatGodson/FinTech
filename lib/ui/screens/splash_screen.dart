@@ -1,4 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:simba_ultimate/constants.dart';
+import 'package:simba_ultimate/services/authentication/authentication.dart';
+import 'package:simba_ultimate/ui/screens/navigation_bar_screen.dart';
 
 import 'dart:async';
 
@@ -16,10 +20,33 @@ class _SplashScreenState extends State<SplashScreen> {
   void screenDelay() {
     var duration = const Duration(seconds: 4);
     Timer(duration, () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const RegistrationScreen()),
-      );
+      FirebaseAuth.instance.currentUser == null
+          ? Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const RegistrationScreen()),
+            )
+          : signInExistingUser();
+    });
+  }
+
+  Authentication authentication = Authentication();
+  signInExistingUser() {
+    setState(() {
+      uid = FirebaseAuth.instance.currentUser!.uid;
+    });
+
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => BottomNavBar()));
+  }
+
+  stateChanges() {
+    final user = FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user == null) {
+        print('user is signed out');
+      } else {
+        print('user signed in ${user.email}');
+      }
     });
   }
 
@@ -28,6 +55,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // TODO: implement initState
     super.initState();
     screenDelay();
+    stateChanges();
   }
 
   @override

@@ -73,8 +73,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               context,
               MaterialPageRoute(
                   builder: (context) => const VerifyMailScreen()));
-        } else {
+        } else if (register == null) {
           final exception = authentication.exception;
+
+          print('exception is $exception');
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(exception!)));
         }

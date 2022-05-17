@@ -6,22 +6,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:simba_ultimate/constants.dart';
 
 class Authentication {
-  final auth = FirebaseAuth.instance;
-  final store = FirebaseFirestore.instance;
-  final collection = FirebaseFirestore.instance.collection('users');
+  final _auth = FirebaseAuth.instance;
+  final _store = FirebaseFirestore.instance;
   String? exception;
-  User? loggedInUser;
+  User? _loggedInUser;
 
-  registerUser(email, password, firstName, lastName, usdBalance, gbpBalance,
-      ngnBalance) async {
+  Future registerUser(email, password, firstName, lastName, usdBalance,
+      gbpBalance, ngnBalance) async {
     try {
-      final newUser = await auth.createUserWithEmailAndPassword(
+      final newUser = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
       if (newUser.user != null) {
         uid = newUser.user?.uid;
-        store.collection("users").doc(uid).set({
+        _store.collection("users").doc(uid).set({
           'uid': uid,
           'firstName': firstName,
           'lastName': lastName,
@@ -40,51 +39,41 @@ class Authentication {
     }
   }
 
-  getCurrentUserEmail() async {
-    User? user = auth.currentUser;
+  Future<String?> getCurrentUserEmail() async {
+    User? user = _auth.currentUser;
     try {
       if (user != null) {
-        loggedInUser = user;
-        // print(loggedInUser?.email);
+        _loggedInUser = user;
       }
     } on FirebaseAuthException catch (e) {
-      print(e.message);
+      throw e.message.toString();
     }
-    return loggedInUser?.email;
+    return _loggedInUser?.email;
   }
 
-  sendVerificationMail() {
-    User? user = auth.currentUser;
+  void sendVerificationMail() {
+    User? user = _auth.currentUser;
     user?.sendEmailVerification();
   }
 
   Future<bool> checkIfMailVerified() async {
     bool? isEmailVerified;
-    User? user = auth.currentUser;
+    User? user = _auth.currentUser;
     await user?.reload();
     isEmailVerified = user?.emailVerified;
     print(isEmailVerified);
     return isEmailVerified!;
   }
 
-  logInUser(email, password) async {
-    // var cred = await FirebaseAuth.instance.signInAnonymously();
-    //   uid = cred.user!.uid;
-
+  Future logInUser(email, password) async {
     try {
-      final user = await auth.signInWithEmailAndPassword(
+      final user = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       uid = user.user!.uid;
-      print("the user uid is: $uid");
-
       return user.user;
     } on FirebaseAuthException catch (e) {
       exception = e.message;
     }
-  }
-
-  logOutUser() async {
-    await auth.signOut();
   }
 
   Future<bool> checkInternetConnectivity() async {
@@ -98,6 +87,10 @@ class Authentication {
     } on SocketException catch (_) {
       return false;
     }
+  }
+
+  Future<void> logOutUser() async {
+    await _auth.signOut();
   }
 
   // getUserDollarBalance() async {
