@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/constants.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
+import 'package:simba_ultimate/ui/screens/login_screen.dart';
 import 'package:simba_ultimate/ui/screens/navigation_bar_screen.dart';
 
 import 'dart:async';
@@ -23,8 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
       FirebaseAuth.instance.currentUser == null
           ? Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                  builder: (context) => const RegistrationScreen()),
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
             )
           : signInExistingUser();
     });
@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
     });
 
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => BottomNavBar()));
+        context, MaterialPageRoute(builder: (context) => const BottomNavBar()));
   }
 
   stateChanges() {

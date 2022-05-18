@@ -13,8 +13,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Authentication authentication = Authentication();
   logout() async {
     await authentication.logOutUser();
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false);
   }
 
   @override

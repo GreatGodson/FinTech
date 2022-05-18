@@ -4,7 +4,11 @@ import 'package:simba_ultimate/components/password_textfield.dart';
 import 'package:simba_ultimate/components/textfield_widget.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:simba_ultimate/styles/exceptions.dart';
+import 'package:simba_ultimate/styles/text_style.dart';
+import 'package:simba_ultimate/styles/theme.dart';
 import 'package:simba_ultimate/ui/screens/navigation_bar_screen.dart';
+import 'package:simba_ultimate/ui/screens/registration_screen.dart';
 import 'package:simba_ultimate/ui/screens/verify_mail_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,11 +19,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  //object of the authentication class
   final Authentication _authentication = Authentication();
   bool _isLoading = false;
   bool? _isVerified;
   bool _isPasswordHidden = true;
 
+  //show and hide password
   void _togglePassword() {
     _isPasswordHidden = !_isPasswordHidden;
     setState(() {});
@@ -29,8 +35,10 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = true;
     });
+
     bool internet = await _authentication.checkInternetConnectivity();
     if (_email.isNotEmpty && _password.isNotEmpty) {
+      // check internet connectivity
       if (internet) {
         final loggingInUser =
             await _authentication.logInUser(_email, _password);
@@ -40,6 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const BottomNavBar()));
           } else {
+            // send verification mail if user is not verified
             _authentication.sendVerificationMail();
             Navigator.push(
                 context,
@@ -48,16 +57,16 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         } else {
           final exception = _authentication.exception;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('username or password is incorrect')));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: incorrectDetailsException));
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Check internet connection')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: internetException));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please fill all fields')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: blankFieldException));
     }
     setState(() {
       _isLoading = false;
@@ -69,75 +78,77 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double mediaSize = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        automaticallyImplyLeading: false,
-        title: const Text('Login'),
-      ),
-      body: SafeArea(
-        child: ListView(children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
-            child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextFieldWidget(
-                  onChanged: (val) {
-                    _email = val;
-                  },
-                  width: double.infinity,
-                  hintText: 'E-mail',
-                ),
-                const SizedBox(
-                  height: 20.0,
-                ),
-                PasswordTextFieldWidget(
-                  isPasswordHidden: _isPasswordHidden,
-                  onChanged: (val) {
-                    _password = val.trim();
-                  },
-                  onTap: _togglePassword,
-                  width: double.infinity,
-                  hintText: 'password',
-                ),
-                const SizedBox(
-                  height: 40.0,
-                ),
-                TextButtonWidget(
-                  child: _isLoading
-                      ? const CupertinoActivityIndicator()
-                      : const Text(
-                          'Login',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                  onPressed: () {
-                    _loginUser();
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 30.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Don\'t have an account?',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Create an account'))
-                    ],
+    Size size = MediaQuery.of(context).size;
+
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: login,
+        ),
+        body: SafeArea(
+          child: ListView(children: [
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
+              child: Column(
+                children: [
+                  TextFieldWidget(
+                    onChanged: (val) {
+                      _email = val;
+                    },
+                    width: double.infinity,
+                    hintText: 'E-mail',
                   ),
-                ),
-              ],
+                  const SizedBox(
+                    height: 20.0,
+                  ),
+                  PasswordTextFieldWidget(
+                    isPasswordHidden: _isPasswordHidden,
+                    onChanged: (val) {
+                      _password = val.trim();
+                    },
+                    onTap: _togglePassword,
+                    width: double.infinity,
+                    hintText: 'password',
+                  ),
+                  const SizedBox(
+                    height: 40.0,
+                  ),
+                  TextButtonWidget(
+                    child:
+                        _isLoading ? const CupertinoActivityIndicator() : login,
+                    onPressed: () {
+                      _loginUser();
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Don\'t have an account?',
+                          style: TextStyle(color: greyTheme),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const RegistrationScreen()));
+                            },
+                            child: const Text('Create an account'))
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ]),
+          ]),
+        ),
       ),
     );
   }

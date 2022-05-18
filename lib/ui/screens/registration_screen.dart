@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:simba_ultimate/components/button_widget.dart';
@@ -6,9 +5,10 @@ import 'package:simba_ultimate/components/password_textfield.dart';
 import 'package:simba_ultimate/components/textfield_widget.dart';
 import 'package:simba_ultimate/services/authentication/authentication.dart';
 import 'package:simba_ultimate/services/currency_balance/currency_balance.dart';
+import 'package:simba_ultimate/styles/exceptions.dart';
+import 'package:simba_ultimate/styles/text_style.dart';
 import 'package:simba_ultimate/ui/screens/login_screen.dart';
 import 'package:simba_ultimate/ui/screens/verify_mail_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
@@ -18,55 +18,61 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-  final auth = FirebaseAuth.instance;
-  final store = FirebaseFirestore.instance;
+  //object of the authentication class
+  final Authentication _authentication = Authentication();
   bool _isLoading = false;
-  Authentication authentication = Authentication();
-
   String _firstName = '';
   String _lastName = '';
   String _email = '';
   String _password = '';
-  int nairaBalance = 0;
-  int poundBalance = 0;
-  int dollarBalance = 0;
-  bool isPasswordHidden = true;
+  int _nairaBalance = 0;
+  int _poundBalance = 0;
+  int _dollarBalance = 0;
+  bool _isPasswordHidden = true;
 
-  togglePassword() {
-    isPasswordHidden = !isPasswordHidden;
+  // show and hide password
+  void _togglePassword() {
+    _isPasswordHidden = !_isPasswordHidden;
     setState(() {});
   }
 
-  _getCurrencyRates() async {
-    // _isLoading = true;
+  dynamic _getCurrencyRates() async {
+    // stream balances
     CurrencyBalance currency = CurrencyBalance();
-    List gottenData = await currency.getCurrenciesData();
+    // store balances in a list
+    List balanceData = await currency.getCurrenciesData();
     setState(() {
-      double ngnBalance = gottenData[0]["NGN"];
-      double gbpBalance = gottenData[0]["GBP"];
-      int usdBalance = gottenData[0]["USD"];
+      double ngnBalance = balanceData[0]["NGN"];
+      double gbpBalance = balanceData[0]["GBP"];
+      int usdBalance = balanceData[0]["USD"];
 
-      nairaBalance = ngnBalance.toInt();
-      poundBalance = gbpBalance.toInt();
-      dollarBalance = usdBalance.toInt();
+      _nairaBalance = ngnBalance.toInt();
+      _poundBalance = gbpBalance.toInt();
+      _dollarBalance = usdBalance.toInt();
     });
-
-    // _isLoading = false;
   }
 
-  Future createUser() async {
+  void _createUser() async {
     setState(() {
       _isLoading = true;
     });
-    bool internet = await authentication.checkInternetConnectivity();
+    bool internet = await _authentication.checkInternetConnectivity();
     if (_firstName.isNotEmpty &&
         _lastName.isNotEmpty &&
         _email.isNotEmpty &&
         _password.isNotEmpty) {
+      // check internet connectivity
       if (internet) {
+        // get currency rates
         await _getCurrencyRates();
-        final register = await authentication.registerUser(_email, _password,
-            _firstName, _lastName, dollarBalance, poundBalance, nairaBalance);
+        final register = await _authentication.registerUser(
+            _email,
+            _password,
+            _firstName,
+            _lastName,
+            _dollarBalance,
+            _poundBalance,
+            _nairaBalance);
 
         if (register != null) {
           Navigator.push(
@@ -74,19 +80,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               MaterialPageRoute(
                   builder: (context) => const VerifyMailScreen()));
         } else if (register == null) {
-          final exception = authentication.exception;
-
-          print('exception is $exception');
+          final exception = _authentication.exception;
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(exception!)));
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Check internet connection')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: internetException));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please fill all fields')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: blankFieldException));
     }
 
     setState(() {
@@ -96,19 +100,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('Create an account'),
+        title: createAccount,
       ),
       body: SafeArea(
         child: ListView(children: [
           Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 50.0),
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -117,11 +118,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       onChanged: (val) {
                         _firstName = val.trim();
                       },
-                      width: width / 2.4,
+                      width: size.width / 2.4,
                       hintText: 'First Name',
                     ),
                     TextFieldWidget(
-                      width: width / 2.4,
+                      width: size.width / 2.4,
                       hintText: 'Last Name',
                       onChanged: (val) {
                         _lastName = val.trim();
@@ -143,26 +144,22 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   height: 30.0,
                 ),
                 PasswordTextFieldWidget(
-                  isPasswordHidden: isPasswordHidden,
+                  isPasswordHidden: _isPasswordHidden,
                   onChanged: (val) {
                     _password = val.trim();
                   },
-                  onTap: togglePassword,
+                  onTap: _togglePassword,
                   width: double.infinity,
                   hintText: 'password',
                 ),
                 SizedBox(
-                  height: height / 20,
+                  height: size.height / 20,
                 ),
                 TextButtonWidget(
-                  child: _isLoading
-                      ? const CupertinoActivityIndicator()
-                      : const Text(
-                          'Sign Up',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                  child:
+                      _isLoading ? const CupertinoActivityIndicator() : signUp,
                   onPressed: () {
-                    createUser();
+                    _createUser();
                   },
                 ),
                 Padding(
@@ -170,18 +167,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Already have an account?',
-                        style: TextStyle(color: Colors.grey),
-                      ),
+                      oldUser,
                       TextButton(
                           onPressed: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const LoginScreen()));
                           },
-                          child: const Text('Log in'))
+                          child: logInNav)
                     ],
                   ),
                 ),
